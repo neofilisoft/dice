@@ -1,1 +1,1 @@
-# dice
+# RNG Dice
