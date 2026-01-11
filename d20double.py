@@ -9,7 +9,6 @@ def roll_double_d20():
         
         print(f"Roll {i}: {roll}")
         
-        # Check specific roll result
         if roll == 20:
             print(f"-> Roll {i} Critical Success!")
         elif roll == 1:
