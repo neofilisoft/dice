@@ -7,7 +7,7 @@ def simple_d20_roller():
     print(f"Result: d{result}")
     
     if result == 20:
-        print("ritical Success!")
+        print("Critical Success!")
     elif result == 1:
         print("Critical Fail!")
     
