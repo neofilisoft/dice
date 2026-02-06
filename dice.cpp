@@ -1,13 +1,12 @@
 #include <iostream>
 #include <string>
-#include <random> // สำหรับการสุ่มที่มีประสิทธิภาพ
+#include <random>
 #include <limits>
 
 using namespace std;
 
-// ฟังก์ชันสำหรับสุ่มตัวเลขลูกเต๋า
 int roll_dice(int sides) {
-    // ใช้ random_device และ mt19937 เพื่อความแม่นยำในการสุ่ม
+    // random_device และ mt19937 ในการสุ่ม
     static random_device rd;
     static mt19937 gen(rd());
     uniform_int_distribution<> dis(1, sides);
@@ -18,7 +17,7 @@ int main() {
     int sides, count;
     char choice;
 
-    cout << "--- โปรแกรมทอยลูกเต๋า D20 และอื่นๆ ---" << endl;
+    cout << "--- โปรแกรมทอยลูกเต๋า ---" << endl;
 
     while (true) {
         cout << "\nระบุจำนวนหน้าของลูกเต๋า: ";
