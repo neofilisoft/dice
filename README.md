@@ -2,8 +2,6 @@
 
 A 3D dice roller for Tabletop RPGs (D&D, Pathfinder) — runs entirely in the browser.
 
-![Dice](icon.ico)
-
 ## Features
 
 - **Three dice types**: D8, D12, D20
