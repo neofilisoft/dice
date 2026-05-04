@@ -1,0 +1,22 @@
+{
+  "name": "Neofilisoft Dice Roller",
+  "short_name": "Dice Roller",
+  "description": "3D Dice Roller for TRPG — D8, D12, D20",
+  "start_url": "index.html",
+  "display": "standalone",
+  "background_color": "#202124",
+  "theme_color": "#202124",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "icon.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "icon.ico",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
