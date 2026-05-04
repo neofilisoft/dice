@@ -1,0 +1,280 @@
+/* ===== BASE ===== */
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+    margin: 0;
+    overflow: hidden;
+    background-color: #202124;
+    font-family: sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* ===== DICE CONTAINER ===== */
+#dice-container {
+    width: 100vw;
+    height: 70vh;
+}
+
+/* ===== UI (result + button) ===== */
+.ui {
+    position: absolute;
+    bottom: 28%;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+}
+
+#result-display {
+    color: white;
+    font-size: 5rem;
+    margin: 0;
+    text-shadow: 0 0 10px rgba(255,255,255,0.5);
+    min-height: 1.2em;
+    transition: transform 0.2s ease;
+}
+
+#result-display.pop {
+    transform: scale(1.15);
+}
+
+#result-breakdown {
+    color: rgba(255,255,255,0.55);
+    font-size: 1rem;
+    letter-spacing: 0.05em;
+    min-height: 1.4em;
+}
+
+button#rollBtn {
+    margin-top: 10px;
+    padding: 15px 40px;
+    font-size: 1.2rem;
+    background-color: #4285f4;
+    color: white;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    transition: background 0.2s, transform 0.1s;
+}
+button#rollBtn:hover { background-color: #357ae8; }
+button#rollBtn:active { transform: scale(0.95); }
+
+/* ===== HAMBURGER MENU BUTTON ===== */
+.menu-container {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 200;
+}
+
+#menu-toggle {
+    width: 44px;
+    height: 44px;
+    background-color: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 10px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    padding: 0;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    transition: background 0.2s;
+}
+#menu-toggle:hover { background-color: rgba(255,255,255,0.2); }
+#menu-toggle span {
+    display: block;
+    width: 20px;
+    height: 2px;
+    background: white;
+    border-radius: 2px;
+    transition: transform 0.3s, opacity 0.3s;
+}
+#menu-toggle.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+#menu-toggle.open span:nth-child(2) { opacity: 0; }
+#menu-toggle.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+/* ===== SIDE MENU PANEL ===== */
+.side-menu {
+    position: fixed;
+    top: 0;
+    left: -270px;
+    width: 260px;
+    height: 100vh;
+    background-color: #2a2b2e;
+    border-right: 1px solid #3c3d40;
+    box-shadow: 4px 0 20px rgba(0,0,0,0.5);
+    z-index: 300;
+    padding: 80px 20px 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.side-menu.open { left: 0; }
+
+.menu-header {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: white;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    padding-bottom: 14px;
+    letter-spacing: 0.04em;
+}
+
+.menu-section-title {
+    font-size: 0.78rem;
+    color: rgba(255,255,255,0.45);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    margin-bottom: -12px;
+}
+
+/* Dice type selector */
+.dice-type-options {
+    display: flex;
+    gap: 10px;
+}
+.dice-type-btn {
+    flex: 1;
+    padding: 12px 0;
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 10px;
+    color: rgba(255,255,255,0.7);
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.dice-type-btn:hover { background: rgba(255,255,255,0.14); color: white; }
+.dice-type-btn.active {
+    background: #591723;
+    border-color: #7a2030;
+    color: white;
+    box-shadow: 0 0 12px rgba(89,23,35,0.6);
+}
+
+/* Dice count selector */
+.dice-count-options {
+    display: flex;
+    gap: 10px;
+}
+.dice-count-btn {
+    flex: 1;
+    padding: 12px 0;
+    background: rgba(255,255,255,0.07);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 10px;
+    color: rgba(255,255,255,0.7);
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.dice-count-btn:hover { background: rgba(255,255,255,0.14); color: white; }
+.dice-count-btn.active {
+    background: #591723;
+    border-color: #7a2030;
+    color: white;
+    box-shadow: 0 0 12px rgba(89,23,35,0.6);
+}
+
+.menu-footer {
+    margin-top: auto;
+    text-align: center;
+    color: rgba(255,255,255,0.35);
+    font-size: 0.85rem;
+    border-top: 1px solid rgba(255,255,255,0.08);
+    padding-top: 16px;
+    letter-spacing: 0.06em;
+}
+
+/* ===== OVERLAY ===== */
+.menu-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 250;
+}
+.menu-overlay.show { display: block; }
+
+/* ===== LANG TOGGLE (top-right) ===== */
+.lang-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 200;
+    font-family: sans-serif;
+}
+
+#lang-toggle {
+    background-color: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.3);
+    padding: 8px 16px;
+    font-size: 1rem;
+    border-radius: 8px;
+    margin: 0;
+    box-shadow: none;
+    min-width: 70px;
+    display: flex;
+    color: white;
+    gap: 5px;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+#lang-toggle:hover { background-color: rgba(255,255,255,0.2); }
+
+.lang-dropdown {
+    display: none;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    margin-top: 5px;
+    background-color: #303134;
+    border: 1px solid #5f6368;
+    border-radius: 8px;
+    overflow: hidden;
+    width: 100%;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+}
+.lang-dropdown.show { display: block; }
+
+.lang-option {
+    padding: 10px 15px;
+    color: white;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background 0.2s;
+}
+.lang-option:hover { background-color: #424548; }
+
+/* ===== FOOTER ===== */
+.footer {
+    position: fixed;
+    bottom: 15px;
+    left: 20px;
+    color: rgba(255,255,255,0.6);
+    font-size: 0.78rem;
+    z-index: 100;
+    user-select: none;
+}
+
+/* ===== ROLL ANIMATION SHAKE ===== */
+@keyframes shake {
+    0%,100% { transform: translateX(0); }
+    20% { transform: translateX(-6px) rotate(-2deg); }
+    40% { transform: translateX(6px) rotate(2deg); }
+    60% { transform: translateX(-4px); }
+    80% { transform: translateX(4px); }
+}
+.shaking { animation: shake 0.15s ease infinite; }

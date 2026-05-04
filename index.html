@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="google-site-verification" content="yFIcEuQQ_sA0FVfelnfDBX8oMUev5EkA-syg52ZNVh8" />
+    
+    <title>Neofilisoft Dice Roller - 3D Dice Simulator for TRPG (ทอยลูกเต๋าออนไลน์)</title>
+    
+    <meta name="description" content="3D Dice Roller สำหรับ Tabletop RPG, D&D — รองรับ D8, D12, D20 ทอยได้ครั้งละหลายลูก">
+    <meta name="keywords" content="D8, D12, D20, Dice Roller, 3D Dice, TRPG, D&D, Pathfinder, ลูกเต๋า, ทอยเต๋าออนไลน์, Neofilisoft, Board Game">
+    
+    <link rel="canonical" href="https://neofilisoft.github.io/d20web/">
+    
+    <meta property="og:title" content="Neofilisoft Dice Roller - 3D Dice Simulator">
+    <meta property="og:description" content="ทอยเต๋า D8/D12/D20 ออนไลน์ พร้อม 3D animation">
+    <meta property="og:image" content="https://neofilisoft.github.io/d20web/cover-image.png">
+    <meta property="og:url" content="https://neofilisoft.github.io/d20web/">
+    <meta property="og:type" content="website">
+
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebApplication",
+      "name": "Neofilisoft Dice Roller",
+      "url": "https://neofilisoft.github.io/d20web/",
+      "description": "A 3D dice roller (D8, D12, D20) for TRPG games like D&D and Pathfinder.",
+      "applicationCategory": "GameApplication",
+      "operatingSystem": "Any",
+      "author": {
+        "@type": "Organization",
+        "name": "Neofilisoft"
+      }
+    }
+    </script>
+</head>
+<body>
+    <!-- Hamburger Menu (top-left) -->
+    <div class="menu-container">
+        <button id="menu-toggle" onclick="toggleMenu()" aria-label="Open dice menu">
+            <span></span><span></span><span></span>
+        </button>
+        <div id="side-menu" class="side-menu">
+            <div class="menu-header">เลือกลูกเต๋า</div>
+
+            <div class="menu-section-title">ชนิดลูกเต๋า</div>
+            <div class="dice-type-options">
+                <button class="dice-type-btn active" onclick="selectDiceType('d8', this)">D8</button>
+                <button class="dice-type-btn" onclick="selectDiceType('d12', this)">D12</button>
+                <button class="dice-type-btn" onclick="selectDiceType('d20', this)">D20</button>
+            </div>
+
+            <div class="menu-section-title">จำนวนลูกเต๋า</div>
+            <div class="dice-count-options">
+                <button class="dice-count-btn active" onclick="selectDiceCount(1, this)">1</button>
+                <button class="dice-count-btn" onclick="selectDiceCount(2, this)">2</button>
+                <button class="dice-count-btn" onclick="selectDiceCount(3, this)">3</button>
+            </div>
+
+            <div class="menu-footer" id="menu-selection-label">D20 × 1</div>
+        </div>
+        <div id="menu-overlay" class="menu-overlay" onclick="closeMenu()"></div>
+    </div>
+
+    <!-- Language Toggle (top-right) -->
+    <div class="lang-container">
+        <button id="lang-toggle" onclick="toggleLangMenu()">EN</button>
+        <div id="lang-menu" class="lang-dropdown">
+            <div class="lang-option" onclick="changeLanguage('th')">ไทย</div>
+            <div class="lang-option" onclick="changeLanguage('en')">English</div>
+        </div>
+    </div>
+
+    <div id="dice-container"></div>
+
+    <div class="ui">
+        <div id="result-display"></div>
+        <div id="result-breakdown"></div>
+        <button id="rollBtn">Roll Dice</button>
+    </div>
+
+    <div class="footer">
+        Copyright © 2026 Neofilisoft. | Three.js © mrdoob (MIT License) | Icons by FontAwesome (CC BY 4.0)
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
