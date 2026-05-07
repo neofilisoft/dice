@@ -1,6 +1,6 @@
 # Neofilisoft Dice Roller
-
-A 3D dice roller for Tabletop RPGs (D&D, Pathfinder) — runs entirely in the browser.
+![Dice](random_dice.png)
+A 3D dice roller for Tabletop RPGs — runs entirely in the browser.
 
 ## Features
 
