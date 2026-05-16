@@ -39,21 +39,64 @@ scene.add(rimLight);
 camera.position.z = 7;
 
 // --- Dice config ---
+function makeD100Geometry(radius = 2) {
+    // WidthSegments=10, HeightSegments=5 → roughly spherical, visually matches real d100
+    return new THREE.SphereGeometry(radius, 10, 5);
+}
+
+// Returns exactly 10 evenly-distributed face normals on a sphere surface
+// for label placement — arranged in 2 rings of 5, alternating like a d10
+function getD100FaceVectors() {
+    const normals = [];
+    // Upper ring of 5 (φ = 60° from top)
+    for (let i = 0; i < 5; i++) {
+        const phi   = Math.PI * 0.33;
+        const theta = (i / 5) * Math.PI * 2;
+        normals.push(new THREE.Vector3(
+            Math.sin(phi) * Math.cos(theta),
+            Math.cos(phi),
+            Math.sin(phi) * Math.sin(theta)
+        ).normalize());
+    }
+    // Lower ring of 5 (φ = 120° from top), offset by 36°
+    for (let i = 0; i < 5; i++) {
+        const phi   = Math.PI * 0.67;
+        const theta = ((i + 0.5) / 5) * Math.PI * 2;
+        normals.push(new THREE.Vector3(
+            Math.sin(phi) * Math.cos(theta),
+            Math.cos(phi),
+            Math.sin(phi) * Math.sin(theta)
+        ).normalize());
+    }
+    return normals;
+}
+
 const DICE_CONFIG = {
-    d8:  { faces: 8,  sides: 8,  color: 0x1a3a5c, geo: () => new THREE.OctahedronGeometry(2, 0) },
-    d12: { faces: 12, sides: 12, color: 0x2d5a1b, geo: () => new THREE.DodecahedronGeometry(2, 0) },
-    d20: { faces: 20, sides: 20, color: 0x591723, geo: () => new THREE.IcosahedronGeometry(2, 0) },
+    d8:   { faces: 8,   sides: 8,   color: 0x1a3a5c, geo: () => new THREE.OctahedronGeometry(2, 0) },
+    d12:  { faces: 12,  sides: 12,  color: 0x2d5a1b, geo: () => new THREE.DodecahedronGeometry(2, 0) },
+    d20:  { faces: 20,  sides: 20,  color: 0x591723,  geo: () => new THREE.IcosahedronGeometry(2, 0) },
+    // D100 = percentile dice: sphere body, 10 label positions (tens die)
+    // units digit rolled separately in result handler
+    d100: { faces: 10,  sides: 100, color: 0x4a1a6b,  geo: () => makeD100Geometry(2),
+            isPercentile: true,
+            labelFn: (i) => i === 9 ? '00' : String(i * 10).padStart(2, '0'),
+            getFaceVectors: () => getD100FaceVectors(),
+        },
 };
 
-// Horizontal positions for 1, 2, 3 dice
+// Horizontal positions for 1–5 dice
 const POSITIONS = {
     1: [[0, 0, 0]],
     2: [[-2.5, 0, 0], [2.5, 0, 0]],
     3: [[-4.2, 0, 0], [0, 0, 0], [4.2, 0, 0]],
+    // 4 dice: one in each corner
+    4: [[-4.2, 2.8, 0], [4.2, 2.8, 0], [-4.2, -2.8, 0], [4.2, -2.8, 0]],
+    // 5 dice: top row of 3, bottom row of 2 centered
+    5: [[-4.2, 2.8, 0], [0, 2.8, 0], [4.2, 2.8, 0], [-2.5, -2.8, 0], [2.5, -2.8, 0]],
 };
 
 // Camera Z per count
-const CAM_Z = { 1: 7, 2: 9, 3: 12 };
+const CAM_Z = { 1: 7, 2: 9, 3: 12, 4: 14, 5: 14 };
 
 // --- Active dice meshes ---
 let diceObjects = []; // [{mesh, faceVectors, targetQuat, rolling, rollVel}]
@@ -96,7 +139,7 @@ function buildDice(type, count) {
 
         scene.add(mesh);
 
-        const faceVectors = computeFaceVectors(geometry);
+        const faceVectors = cfg.getFaceVectors ? cfg.getFaceVectors() : computeFaceVectors(geometry);
         const targetQuat = new THREE.Quaternion();
         targetQuat.copy(mesh.quaternion);
 
@@ -152,33 +195,39 @@ function addNumbersToDice(diceObj) {
     let dist = 1.65;
     if (currentDiceType === 'd8') dist = 1.16;
     else if (currentDiceType === 'd12') dist = 1.60;
+    else if (currentDiceType === 'd100') dist = 2.05;
     
-    // เปลี่ยนมาลูปตามจำนวน faceVectors แทนการนับจาก Geometry
+    const cfg = DICE_CONFIG[currentDiceType];
+
     for (let i = 0; i < faceVectors.length; i++) {
         const canvas = document.createElement('canvas');
         canvas.width = 128; canvas.height = 128;
         const ctx = canvas.getContext('2d');
         ctx.clearRect(0, 0, 128, 128);
         ctx.fillStyle = 'white';
-        ctx.font = 'bold 78px Arial';
+        ctx.font = cfg.isPercentile ? 'bold 58px Arial' : 'bold 78px Arial';
         ctx.textAlign = 'center';
         ctx.textBaseline = 'middle';
-        ctx.fillText(i + 1, 64, 64);
+        const label = cfg.labelFn ? cfg.labelFn(i) : String(i + 1);
+        ctx.fillText(label, 64, 64);
         const texture = new THREE.CanvasTexture(canvas);
         texture.needsUpdate = true;
 
         const planeGeom = new THREE.PlaneGeometry(0.7, 0.7);
         const planeMat = new THREE.MeshBasicMaterial({
             map: texture, transparent: true,
+            depthWrite: false,
             side: THREE.DoubleSide, depthTest: true
         });
-        const label = new THREE.Mesh(planeGeom, planeMat);
-        
-        const center = faceVectors[i].clone();
-        
-        label.position.copy(center).multiplyScalar(dist);
-        label.lookAt(center.clone().multiplyScalar(4));
-        mesh.add(label);
+        const labelMesh = new THREE.Mesh(planeGeom, planeMat);
+
+        const dir = faceVectors[i].clone().normalize();
+        labelMesh.position.copy(dir.clone().multiplyScalar(dist));
+        // lookAt world origin from label position (which is in mesh-local space)
+        labelMesh.lookAt(new THREE.Vector3(0, 0, 0).sub(dir));
+        // flip 180° so text faces outward not inward
+        labelMesh.rotateY(Math.PI);
+        mesh.add(labelMesh);
     }
 }
 
@@ -245,6 +294,22 @@ document.getElementById('rollBtn').onclick = () => {
             }
         });
 
+        // --- D100 special display ---
+        if (cfg.isPercentile) {
+            const tensRoll  = Math.floor(Math.random() * 10) * 10;
+            const unitsRoll = Math.floor(Math.random() * 10);
+            const total     = tensRoll + unitsRoll === 0 ? 100 : tensRoll + unitsRoll;
+            const tensLabel  = String(tensRoll).padStart(2, '0');
+            const unitsLabel = String(unitsRoll).padStart(2, '0');
+            isRolling = false;
+            resultDisplay.innerText = total;
+            void resultDisplay.offsetWidth;
+            resultDisplay.classList.add('pop');
+            setTimeout(() => resultDisplay.classList.remove('pop'), 300);
+            breakdown.innerText = tensLabel + ' + ' + unitsLabel + ' = ' + total;
+            return;
+        }
+
         const total = results.reduce((a, b) => a + b, 0);
         isRolling = false;
 
@@ -306,6 +371,8 @@ const translations = {
     en: { btnText: 'Roll Dice', label: 'EN', menuHeader: 'Choose a dice',  sectionType: 'Types', sectionCount: 'Number of dice' },
 };
 
+// D100 note: when selected, dice count buttons still render but D100 always
+// uses a single tens-die visually (the result breakdown shows tens + units separately).
 function toggleLangMenu() {
     document.getElementById('lang-menu').classList.toggle('show');
 }
