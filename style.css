@@ -163,7 +163,8 @@ button#rollBtn:active { transform: scale(0.95); }
 
 /* Dice count selector */
 .dice-count-options {
-    display: flex;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
     gap: 10px;
 }
 .dice-count-btn {
